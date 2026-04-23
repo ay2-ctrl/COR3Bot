@@ -1,11 +1,11 @@
-# COR3Bot 🤖
+#COR3Bot 🤖
 
 An Android automation tool for [cor3.gg](https://cor3.gg).
 
-## Features
-- Auto expedition management
-- Auto job completion
-- Auto event decisions
+##Features
+- Automatic expedition management
+-Auto job completion
+- Auto event decisions(not active yet)
 - Randomly selects location, zone and objective (ready for future updates)
 - Runs in the background while you sleep 💤
 
@@ -25,3 +25,4 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 
 ## Note
 Use at your own risk.
+ 
