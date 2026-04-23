@@ -6,6 +6,7 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 - Auto expedition management
 - Auto job completion
 - Auto event decisions
+- Randomly selects location, zone and objective (ready for future updates)
 - Runs in the background while you sleep 💤
 
 ## Credits
