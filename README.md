@@ -20,6 +20,8 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 4. Enter cor3.gg and let it run!
 ## Screenshots
 
-![COR3Bot Screenshot](Screenshot_20260423_043010.jpg)
+## Screenshots
+
+<img src="Screenshot_20260423_043010.jpg" width="300"/>
 ## Note
 Use at your own risk.
