@@ -1,0 +1,1 @@
+COR3Bot is an Android automation tool for cor3.gg. Original script by doggo on the COR3 Discord. Android app built with the help of Claude (Anthropic). Runs expeditions, jobs and events in the background while you sleep. Original script is owned by doggo. Use at your own risk.
