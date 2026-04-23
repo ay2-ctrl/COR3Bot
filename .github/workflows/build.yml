@@ -17,12 +17,15 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug
+      env:
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx1536m"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
