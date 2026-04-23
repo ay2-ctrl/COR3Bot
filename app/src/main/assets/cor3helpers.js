@@ -985,7 +985,16 @@
     }
 
     function processExpedition(expedition) {
-        if (expedition?.status === 'COMPLETED') playNotificationSound();
+        if (expedition?.status === 'COMPLETED') {
+            playNotificationSound();
+            // Send Android notification when expedition is completed
+            if (window.AndroidBridge) {
+                AndroidBridge.notify(
+                    '🎉 Expedition Completed!',
+                    (expedition.locationName || 'Expedition') + ' has finished!'
+                );
+            }
+        }
         if (!CONFIG.enabled || !expedition?.id) return;
         if (expedition.status === 'EVENT') tryDecide(expedition);
     }
@@ -1044,6 +1053,14 @@
             console.groupEnd();
 
             await sleep(5000);
+
+            // Send Android notification about the decision made
+            if (window.AndroidBridge) {
+                AndroidBridge.notify(
+                    '⚔️ Decision Made',
+                    'Chosen: ' + chosenOption.label + ' | ' + (expedition.locationName || '')
+                );
+            }
 
             const clearRespond = emitEventInterval('expeditions:respond.event', {
                 expeditionId: expedition.id,
