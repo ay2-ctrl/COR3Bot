@@ -63,7 +63,7 @@ public class BotService extends Service {
             NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
                 "COR3 Bot",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_HIGH
             );
             channel.setDescription("COR3 Bot background service");
             channel.setShowBadge(false);
