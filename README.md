@@ -18,6 +18,8 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 2. Enable "Install from unknown sources" on your phone
 3. Install and open the app
 4. Enter cor3.gg and let it run!
+## Screenshots
 
+![COR3Bot Screenshot](Screenshot_20260423_043010.jpg)
 ## Note
 Use at your own risk.
