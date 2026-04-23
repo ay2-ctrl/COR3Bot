@@ -18,6 +18,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Fix gradlew JVM opts
+      run: |
+        sed -i 's/DEFAULT_JVM_OPTS=.*/DEFAULT_JVM_OPTS=""/' gradlew
+
     - name: Fix gradle.properties
       run: |
         echo "android.useAndroidX=true" > gradle.properties
