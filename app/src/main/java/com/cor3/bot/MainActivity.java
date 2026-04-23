@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
         // Wake lock
         PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "COR3Bot:WakeLock");
-        wakeLock.acquire(10*60*1000L);
+        wakeLock.acquire();
 
         // Foreground service
         Intent serviceIntent = new Intent(this, BotService.class);
@@ -297,7 +297,7 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 updateInfoPanel(webView.getUrl(), "Active ✓", true);
                 setStatus("Script Active", "#44ff88");
-                sendScriptNotification(); // bildirim gönder
+                sendScriptNotification(); 
             });
             Log.i(TAG, "Script injected: " + result);
         });
