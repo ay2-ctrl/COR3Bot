@@ -27,6 +27,12 @@ jobs:
         echo "android.useAndroidX=true" > gradle.properties
         echo "android.enableJetifier=true" >> gradle.properties
 
+    - name: Download gradle wrapper jar
+      run: |
+        mkdir -p gradle/wrapper
+        curl -L https://github.com/gradle/gradle/raw/v8.13.0/gradle/wrapper/gradle-wrapper.jar \
+          -o gradle/wrapper/gradle-wrapper.jar
+
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
