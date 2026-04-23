@@ -1081,6 +1081,9 @@
     onSocketEvent('expeditions:*', (data) => {
         if (Array.isArray(data)) data.forEach((e) => e?.id && processExpedition(e));
         else if (data?.id) processExpedition(data);
+        // Debug: log expedition status
+        const exp = Array.isArray(data) ? data[0] : data;
+        if (exp?.id) console.log('[AUTO] Expedition status:', exp.status, 'messages:', exp.messages?.length);
     });
 
     window.autoExpedition = {
