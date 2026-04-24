@@ -4,10 +4,9 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 
 ##Features
 - Automatic expedition management
--Auto job completion
-- Auto event decisions(not active yet)
+- Auto job completion
+- Added user decision popup for expedition events
 - Randomly selects location, zone and objective (ready for future updates)
-- Runs in the background while you sleep 💤
 
 ## Credits
 - Original script by **doggo** on the COR3 Discord
