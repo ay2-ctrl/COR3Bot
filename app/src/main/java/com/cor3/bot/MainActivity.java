@@ -37,7 +37,10 @@ public class MainActivity extends Activity {
     private View infoPanel;
 
     private String scriptContent = null;
+
+    private boolean scriptEnabled  = true;
     private boolean scriptInjected = false;
+
     private PowerManager.WakeLock wakeLock;
 
 
@@ -176,18 +179,18 @@ public class MainActivity extends Activity {
                         "(function() {" +
                                 "  var m = document.querySelector('meta[name=viewport]');" +
                                 "  if (m) {" +
-                                "    m.setAttribute('content', 'width=1280');" +
+                                "    m.setAttribute('content', 'width=1280, user-scalable=yes, minimum-scale=0.1, maximum-scale=10.0');" +
                                 "  } else {" +
                                 "    var meta = document.createElement('meta');" +
                                 "    meta.name = 'viewport';" +
-                                "    meta.content = 'width=1280';" +
+                                "    meta.content = 'width=1280, user-scalable=yes, minimum-scale=0.1, maximum-scale=10.0';" +
                                 "    document.head.appendChild(meta);" +
                                 "  }" +
                                 "})();",
-                    null
+                        null
                 );
 
-                if (scriptContent != null && !scriptInjected && url.contains("cor3.gg")) {
+                if (scriptContent != null && !scriptInjected && url.contains("cor3.gg") && scriptEnabled) {
                     injectScript(view);
                 }
 
@@ -203,7 +206,7 @@ public class MainActivity extends Activity {
         // --- URL giriş - klavyede "Git" tuşu ---
         urlInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO ||
-                (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                 navigateTo(urlInput.getText().toString().trim());
                 return true;
             }
@@ -231,13 +234,48 @@ public class MainActivity extends Activity {
             }
         });
 
-
+        // Script toggle button
+        Button btnToggle = (Button) findViewById(R.id.btn_toggle_script);
+        btnToggle.setOnClickListener(v -> {
+            if (scriptInjected) {
+                // Disable script
+                scriptEnabled = false;
+                scriptInjected = false;
+                webView.evaluateJavascript(
+                        "window.__socketHookActive = false;" +
+                                "window.__autoExpeditionEventActive = false;" +
+                                "window.__autoExpeditionRestartActive = false;" +
+                                "window.__jobAutomation = false;" +
+                                "window.__jobTimerActive = false;",
+                        null
+                );
+                scriptInjected = false;
+                btnToggle.setBackgroundColor(android.graphics.Color.parseColor("#4a1a1a"));
+                btnToggle.setTextColor(android.graphics.Color.parseColor("#ff4444"));
+                setStatus("Script Disabled", "#ff4444");
+                sendNotification("COR3 Bot ⛔ Script Disabled", "Bot automation stopped", 3);
+            } else {
+                // Enable script
+                scriptEnabled = true;
+                if (scriptContent != null) {
+                    injectScript(webView);
+                    btnToggle.setBackgroundColor(android.graphics.Color.parseColor("#1a4a1a"));
+                    btnToggle.setTextColor(android.graphics.Color.parseColor("#44ff88"));
+                }
+            }
+        });
         ((Button) findViewById(R.id.btn_info)).setOnClickListener(v -> {
             if (infoPanel.getVisibility() == View.VISIBLE) {
                 infoPanel.setVisibility(View.GONE);
             } else {
                 updateInfoPanel(webView.getUrl(), scriptInjected ? "Active ✓" : "DeActive", scriptInjected);
                 infoPanel.setVisibility(View.VISIBLE);
+            }
+        });
+        // Refresh button
+        ((Button) findViewById(R.id.btn_refresh)).setOnClickListener(v -> {
+            if (webView.getUrl() != null) {
+                webView.reload();
             }
         });
 
@@ -270,8 +308,8 @@ public class MainActivity extends Activity {
         if (infoScript != null) {
             infoScript.setText("Script: " + scriptState);
             infoScript.setTextColor(active
-                ? android.graphics.Color.parseColor("#44ff88")
-                : android.graphics.Color.parseColor("#ffaa44"));
+                    ? android.graphics.Color.parseColor("#44ff88")
+                    : android.graphics.Color.parseColor("#ffaa44"));
         }
         if (infoZoom != null)   infoZoom.setText("Zoom: %" + zoomPercent);
     }
@@ -287,17 +325,17 @@ public class MainActivity extends Activity {
 
     private void injectScript(WebView view) {
         String safeScript =
-            "(function() { try { " +
-            scriptContent +
-            "\n console.log('[COR3Bot] Script active!'); " +
-            "} catch(e) { console.error('[COR3Bot] Script error:', e.toString()); } })();";
+                "(function() { try { " +
+                        scriptContent +
+                        "\n console.log('[COR3Bot] Script active!'); " +
+                        "} catch(e) { console.error('[COR3Bot] Script error:', e.toString()); } })();";
 
         view.evaluateJavascript(safeScript, result -> {
             scriptInjected = true;
             runOnUiThread(() -> {
                 updateInfoPanel(webView.getUrl(), "Active ✓", true);
                 setStatus("Script Active", "#44ff88");
-                sendScriptNotification(); 
+                sendNotification("COR3 Bot 🟢 Script Active", "Bot is running in the background 💪", 2);
             });
             Log.i(TAG, "Script injected: " + result);
         });
@@ -323,24 +361,48 @@ public class MainActivity extends Activity {
     }
 
 
-    private void sendScriptNotification() {
+    // Normal notification - no vibration
+    private void sendNotification(String title, String message, int id) {
         android.app.NotificationManager nm =
                 (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        android.app.Notification notif = new android.app.Notification.Builder(this, "cor3_bot_channel")
-                .setContentTitle("COR3 Bot 🟢 Script Active")
-                .setContentText("You sleep soundly, I'm working. 💪")
+        android.app.Notification notif = new android.app.Notification.Builder(this, "cor3_bot_alerts")
+                .setContentTitle(title)
+                .setContentText(message)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .build();
 
-        nm.notify(2, notif);
+        nm.notify(id, notif);
+    }
+
+    // Decision notification - with vibration
+    private void sendDecisionNotification(String title, String message) {
+        android.app.NotificationManager nm =
+                (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        android.app.Notification notif = new android.app.Notification.Builder(this, "cor3_bot_alerts")
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setAutoCancel(true)
+                .setVibrate(new long[]{0, 500, 200, 500})
+                .setPriority(android.app.Notification.PRIORITY_HIGH)
+                .build();
+
+        nm.notify((int) System.currentTimeMillis(), notif);
     }
 
 
 
     // JS Bridge
     public class JsBridge {
+        @JavascriptInterface
+        public void notifyDecision(String title, String message) {
+            runOnUiThread(() -> {
+                sendDecisionNotification(title, message);
+            });
+        }
         @JavascriptInterface
         public void log(String message) {
             Log.i(TAG + "/Bridge", message);
