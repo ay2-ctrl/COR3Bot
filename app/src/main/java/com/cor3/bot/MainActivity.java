@@ -112,22 +112,17 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
-
-
-
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
-
-
+        s.setSupportZoom(true);
+        s.setBuiltInZoomControls(true);
         s.setUserAgentString(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                         "AppleWebKit/537.36 (KHTML, like Gecko) " +
                         "Chrome/124.0.0.0 Safari/537.36"
         );
 
-
-        webView.setInitialScale(1);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
 
@@ -202,8 +197,6 @@ public class MainActivity extends Activity {
                 runOnUiThread(() -> setStatus("Error: " + description, "#ff4444"));
             }
         });
-
-        // --- URL giriş - klavyede "Git" tuşu ---
         urlInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
@@ -213,11 +206,9 @@ public class MainActivity extends Activity {
             return false;
         });
 
-
         ((Button) findViewById(R.id.btn_go)).setOnClickListener(v -> {
             navigateTo(urlInput.getText().toString().trim());
         });
-
         // --- Zoom Out ---
         ((Button) findViewById(R.id.btn_zoom_out)).setOnClickListener(v -> {
             if (zoomPercent > 50) {
@@ -225,7 +216,6 @@ public class MainActivity extends Activity {
                 applyZoom();
             }
         });
-
         // --- Zoom In ---
         ((Button) findViewById(R.id.btn_zoom_in)).setOnClickListener(v -> {
             if (zoomPercent < 200) {
@@ -233,7 +223,6 @@ public class MainActivity extends Activity {
                 applyZoom();
             }
         });
-
         // Script toggle button
         Button btnToggle = (Button) findViewById(R.id.btn_toggle_script);
         btnToggle.setOnClickListener(v -> {
@@ -279,6 +268,26 @@ public class MainActivity extends Activity {
             }
         });
 
+        // PC/Loadout button - toggle loadout view
+        final boolean[] pcActive = {false};
+        ((Button) findViewById(R.id.btn_pc)).setOnClickListener(v -> {
+            if (!pcActive[0]) {
+                webView.evaluateJavascript(
+                        "(function() {" +
+                                "  var btn = document.querySelector('[data-component-name=\"LoadoutTabBarItem\"]');" +
+                                "  if (btn) { btn.click(); console.log('[COR3Bot] Loadout clicked'); }" +
+                                "  else { console.warn('[COR3Bot] Loadout button not found'); }" +
+                                "})();",
+                        null
+                );
+                pcActive[0] = true;
+            } else {
+                if (webView.canGoBack()) {
+                    webView.goBack();
+                }
+                pcActive[0] = false;
+            }
+        });
 
     }
 
@@ -444,5 +453,7 @@ public class MainActivity extends Activity {
         webView.destroy();
         stopService(new Intent(this, BotService.class));
         if (wakeLock != null && wakeLock.isHeld()) wakeLock.release();
+
     }
+
 }
