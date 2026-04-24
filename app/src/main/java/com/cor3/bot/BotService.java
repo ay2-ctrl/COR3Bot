@@ -13,7 +13,13 @@ import android.util.Log;
 public class BotService extends Service {
 
     private static final String TAG = "COR3BotService";
-    private static final String CHANNEL_ID = "cor3_bot_channel";
+
+    // Channel for foreground service notification (silent, always visible)
+    public static final String CHANNEL_ID = "cor3_bot_channel";
+
+    // Channel for bot event alerts (high priority, makes sound)
+    public static final String ALERT_CHANNEL_ID = "cor3_bot_alerts";
+
     private static final int NOTIFICATION_ID = 1;
 
     @Override
@@ -26,7 +32,6 @@ public class BotService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return START_STICKY;
     }
 
@@ -45,13 +50,13 @@ public class BotService extends Service {
         Intent openApp = new Intent(this, MainActivity.class);
         openApp.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-            this, 0, openApp,
-            PendingIntent.FLAG_IMMUTABLE
+                this, 0, openApp,
+                PendingIntent.FLAG_IMMUTABLE
         );
 
         return new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle("COR3 Bot Active 🟢")
-                .setContentText("You sleep soundly, I'm working.💪")
+                .setContentText("Running in background... 💪")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
@@ -60,15 +65,30 @@ public class BotService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "COR3 Bot",
-                NotificationManager.IMPORTANCE_HIGH
+            // Foreground service channel - silent, always visible in status bar
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "COR3 Bot Service",
+                    NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("COR3 Bot background service");
-            channel.setShowBadge(false);
+            serviceChannel.setDescription("COR3 Bot background service");
+            serviceChannel.setShowBadge(false);
+
+            // Alert channel - high priority for bot events (expedition, decisions)
+            NotificationChannel alertChannel = new NotificationChannel(
+                    ALERT_CHANNEL_ID,
+                    "COR3 Bot Alerts",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            alertChannel.setDescription("Bot event notifications");
+            alertChannel.setShowBadge(true);
+            alertChannel.enableVibration(true);
+
             NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(channel);
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(alertChannel);
+            }
         }
     }
 }
