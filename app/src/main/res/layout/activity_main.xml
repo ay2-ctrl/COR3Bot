@@ -4,18 +4,14 @@
     android:layout_height="match_parent"
     android:background="#0d0d1a">
 
-    <!-- Ana WebView alanı -->
-
-    <!-- Alt bar: URL + butonlar -->
-
     <FrameLayout
         android:id="@+id/webview_container"
         android:layout_width="match_parent"
-        android:layout_height="667dp"
+        android:layout_height="match_parent"
         android:layout_above="@+id/bottom_bar"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="0dp" />
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="-4dp" />
 
     <LinearLayout
         android:id="@+id/bottom_bar"
@@ -29,14 +25,14 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp">
 
-        <!-- URL giriş kutusu -->
+        <!-- URL input -->
         <EditText
             android:id="@+id/url_input"
             android:layout_width="0dp"
             android:layout_height="49dp"
             android:layout_weight="1"
             android:background="#1e1e3a"
-            android:hint="URL girin..."
+            android:hint="Enter URL..."
             android:imeOptions="actionGo"
             android:inputType="textUri"
             android:maxLines="1"
@@ -47,7 +43,7 @@
             android:textColorHint="#6666aa"
             android:textSize="12sp" />
 
-        <!-- Git butonu -->
+        <!-- Go button -->
         <Button
             android:id="@+id/btn_go"
             android:layout_width="40dp"
@@ -58,11 +54,22 @@
             android:text="→"
             android:textColor="#ffffff"
             android:textSize="16sp" />
+	<Button
+            android:id="@+id/btn_refresh"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:background="#1e1e3a"
+            android:padding="0dp"
+            android:text="↺"
+            android:textColor="#aaaaff"
+            android:textSize="18sp" />
+
 
         <!-- Zoom Out -->
         <Button
             android:id="@+id/btn_zoom_out"
-            android:layout_width="48dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:background="#1e1e3a"
@@ -70,11 +77,10 @@
             android:text="−"
             android:textColor="#aaaaff"
             android:textSize="20sp" />
-
-        <!-- Zoom In -->
+	        <!-- Zoom In -->
         <Button
             android:id="@+id/btn_zoom_in"
-            android:layout_width="46dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:background="#1e1e3a"
@@ -83,10 +89,22 @@
             android:textColor="#aaaaff"
             android:textSize="20sp" />
 
-        <!-- Bilgi paneli butonu -->
+        <!-- Script toggle button - green when active, red when inactive -->
+        <Button
+            android:id="@+id/btn_toggle_script"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:background="#1a4a1a"
+            android:padding="0dp"
+            android:text="⚡"
+            android:textColor="#44ff88"
+            android:textSize="16sp" />
+
+        <!-- Info panel button -->
         <Button
             android:id="@+id/btn_info"
-            android:layout_width="47dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:background="#1e1e3a"
@@ -97,7 +115,7 @@
 
     </LinearLayout>
 
-    <!-- Bilgi paneli (başta gizli) -->
+    <!-- Info panel (hidden by default) -->
     <LinearLayout
         android:id="@+id/info_panel"
         android:layout_width="260dp"
@@ -125,7 +143,7 @@
             android:id="@+id/info_script"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Script: Bekleniyor..."
+            android:text="Script: Waiting..."
             android:textColor="#ffaa44"
             android:textSize="11sp"
             android:layout_marginBottom="4dp" />
@@ -143,7 +161,7 @@
             android:id="@+id/info_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Durum: Hazır"
+            android:text="Status: Ready"
             android:textColor="#44ff88"
             android:textSize="11sp" />
 
