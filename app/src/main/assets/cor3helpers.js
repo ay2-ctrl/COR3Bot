@@ -985,18 +985,104 @@
     }
 
     function processExpedition(expedition) {
-        if (expedition?.status === 'COMPLETED') {
-            playNotificationSound();
-            // Send Android notification when expedition is completed
-            if (window.AndroidBridge) {
-                AndroidBridge.notify(
-                    '🎉 Expedition Completed!',
-                    (expedition.locationName || 'Expedition') + ' has finished!'
-                );
-            }
-        }
+        if (expedition?.status === 'COMPLETED') playNotificationSound();
         if (!CONFIG.enabled || !expedition?.id) return;
         if (expedition.status === 'EVENT') tryDecide(expedition);
+    }
+
+    // Show a popup so the user can manually choose an option
+    function showDecisionPopup(expedition, unresolvedMessage) {
+        return new Promise((resolve) => {
+            const existing = document.getElementById('cor3-decision-popup');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'cor3-decision-popup';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.75);
+                z-index: 999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: sans-serif;
+            `;
+
+            const box = document.createElement('div');
+            box.style.cssText = `
+                background: #111128;
+                border: 1px solid #2244aa;
+                border-radius: 12px;
+                padding: 20px;
+                max-width: 340px;
+                width: 90%;
+                color: #e0e0ff;
+            `;
+
+            const title = document.createElement('div');
+            title.style.cssText = 'font-size:16px;font-weight:bold;color:#aaaaff;margin-bottom:8px;';
+            title.textContent = '⚔️ Decision Required';
+            box.appendChild(title);
+
+            const loc = document.createElement('div');
+            loc.style.cssText = 'font-size:12px;color:#6666aa;margin-bottom:12px;';
+            loc.textContent = (expedition.locationName || '') + (expedition.objectiveName ? ' · ' + expedition.objectiveName : '');
+            box.appendChild(loc);
+
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:13px;color:#ccccff;margin-bottom:16px;line-height:1.4;';
+            msg.textContent = unresolvedMessage.content || '';
+            box.appendChild(msg);
+
+            if (unresolvedMessage.decisionDeadline) {
+                const dl = document.createElement('div');
+                dl.style.cssText = 'font-size:11px;color:#ff8844;margin-bottom:12px;';
+                dl.textContent = '⏰ Deadline: ' + new Date(unresolvedMessage.decisionDeadline).toLocaleTimeString();
+                box.appendChild(dl);
+            }
+
+            unresolvedMessage.decisionOptions.forEach((option) => {
+                const btn = document.createElement('button');
+                const risk = option.riskModifier ?? 0;
+                const loot = option.lootModifier ?? 0;
+                const riskColor = risk > 0 ? '#ff4444' : '#44ff88';
+                const lootColor = loot > 0 ? '#44ff88' : '#ff4444';
+
+                btn.style.cssText = `
+                    display: block;
+                    width: 100%;
+                    margin-bottom: 8px;
+                    padding: 10px 14px;
+                    background: #1e1e3a;
+                    border: 1px solid #2244aa;
+                    border-radius: 8px;
+                    color: #e0e0ff;
+                    font-size: 13px;
+                    text-align: left;
+                    cursor: pointer;
+                `;
+
+                btn.innerHTML = '<strong>' + option.label + '</strong><br>' +
+                    '<span style="font-size:11px;">' +
+                    '<span style="color:' + riskColor + ';">Risk: ' + (risk > 0 ? '+' : '') + risk + '</span>' +
+                    '&nbsp;&nbsp;' +
+                    '<span style="color:' + lootColor + ';">Loot: ' + (loot > 0 ? '+' : '') + loot + '</span>' +
+                    '</span>';
+
+                btn.addEventListener('mouseover', () => { btn.style.background = '#2a2a4a'; });
+                btn.addEventListener('mouseout', () => { btn.style.background = '#1e1e3a'; });
+                btn.addEventListener('click', () => {
+                    overlay.remove();
+                    resolve(option);
+                });
+
+                box.appendChild(btn);
+            });
+
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+        });
     }
 
     async function tryDecide(expedition) {
@@ -1018,49 +1104,24 @@
                 unresolvedMessage.decisionDeadline &&
                 Date.now() > new Date(unresolvedMessage.decisionDeadline).getTime() + 5000
             ) {
-                console.warn(`[AUTO] ⏰ Deadline passed - skipping ${unresolvedMessage.id}`);
+                console.warn('[DECISION] ⏰ Deadline passed - skipping ' + unresolvedMessage.id);
                 return;
             }
 
-            const chosenOption = findBestOption(unresolvedMessage.decisionOptions, expedition.riskScore);
-            if (!chosenOption) return;
-
-            // Guard against concurrent processing of the same message.
+            // Send Android notification to alert user
             playNotificationSound();
-
-            const optionRows = unresolvedMessage.decisionOptions.map((o) => ({
-                option: o.label,
-                risk: o.riskModifier ?? 0,
-                loot: o.lootModifier ?? 0,
-                score: scoreOption(o, expedition.riskScore).toFixed(2),
-                pick: o.id === chosenOption.id ? '✓' : ''
-            }));
-            console.groupCollapsed(`%c[AUTO] Decision → "${chosenOption.label}"`, 'color:#4CAF50;font-weight:bold');
-            console.table(optionRows);
-            console.log('Location :', expedition.locationName, '|', expedition.objectiveName);
-            console.log(
-                'Risk     :',
-                expedition.riskScore,
-                `(eff x${effectiveRiskWeight(expedition.riskScore).toFixed(2)})`
-            );
-            console.log('Message  :', unresolvedMessage.content);
-            console.log(
-                'Deadline :',
-                unresolvedMessage.decisionDeadline
-                    ? new Date(unresolvedMessage.decisionDeadline).toLocaleTimeString()
-                    : '-'
-            );
-            console.groupEnd();
-
-            await sleep(5000);
-
-            // Send Android notification about the decision made
             if (window.AndroidBridge) {
-                AndroidBridge.notify(
-                    '⚔️ Decision Made',
-                    'Chosen: ' + chosenOption.label + ' | ' + (expedition.locationName || '')
+                AndroidBridge.notifyDecision(
+                    '⚔️ Decision Required!',
+                    'Open the app to choose: ' + (expedition.locationName || 'Expedition')
                 );
             }
+
+            // Show popup and wait for user to choose
+            const chosenOption = await showDecisionPopup(expedition, unresolvedMessage);
+            if (!chosenOption) return;
+
+            console.log('[DECISION] User chose: "' + chosenOption.label + '"');
 
             const clearRespond = emitEventInterval('expeditions:respond.event', {
                 expeditionId: expedition.id,
@@ -1070,20 +1131,22 @@
 
             await awaitSocketEvent('expeditions:respond.event');
             clearRespond();
-            console.log('%c[AUTO] ✓ Decision confirmed', 'color:#4CAF50;font-weight:bold');
+            console.log('[DECISION] ✓ Decision confirmed');
+
+            if (window.AndroidBridge) {
+                AndroidBridge.notify('✅ Decision Sent!', 'Chosen: ' + chosenOption.label);
+            }
         } catch (e) {
-            console.error('[AUTO] ✗ Decision failed:', e);
+            console.error('[DECISION] ✗ Decision failed:', e);
         } finally {
             activeMessageIds.delete(unresolvedMessage.id);
         }
     }
 
+
     onSocketEvent('expeditions:*', (data) => {
         if (Array.isArray(data)) data.forEach((e) => e?.id && processExpedition(e));
         else if (data?.id) processExpedition(data);
-        // Debug: log expedition status
-        const exp = Array.isArray(data) ? data[0] : data;
-        if (exp?.id) console.log('[AUTO] Expedition status:', exp.status, 'messages:', exp.messages?.length);
     });
 
     window.autoExpedition = {
