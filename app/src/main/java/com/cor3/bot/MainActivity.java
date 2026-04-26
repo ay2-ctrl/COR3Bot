@@ -1,7 +1,6 @@
 package com.cor3.bot;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,14 +19,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "COR3Bot";
 
@@ -70,6 +69,12 @@ public class MainActivity extends Activity {
             startService(serviceIntent);
         }
 
+
+
+
+
+
+
         // JS dosyasını yükle
         scriptContent = loadAsset("cor3helpers.js");
         if (scriptContent == null) {
@@ -103,8 +108,8 @@ public class MainActivity extends Activity {
         webView = new WebView(this);
         FrameLayout container = (FrameLayout) findViewById(R.id.webview_container);
         container.addView(webView);
-
-
+        webView.setKeepScreenOn(true);
+        webView.getSettings().setJavaScriptEnabled(true);
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
@@ -115,6 +120,8 @@ public class MainActivity extends Activity {
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
+        s.setLoadWithOverviewMode(false);
+        s.setUseWideViewPort(false);
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setUserAgentString(
@@ -143,9 +150,7 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-
-                String url = request.getUrl().toString();
-                return !url.contains("cor3.gg");
+                return false; // her URL'ye izin ver
             }
 
             @Override
@@ -174,11 +179,11 @@ public class MainActivity extends Activity {
                         "(function() {" +
                                 "  var m = document.querySelector('meta[name=viewport]');" +
                                 "  if (m) {" +
-                                "    m.setAttribute('content', 'width=1280, user-scalable=yes, minimum-scale=0.1, maximum-scale=10.0');" +
+                                "    m.setAttribute('content', 'width=1280, user-scalable=yes');" +
                                 "  } else {" +
                                 "    var meta = document.createElement('meta');" +
                                 "    meta.name = 'viewport';" +
-                                "    meta.content = 'width=1280, user-scalable=yes, minimum-scale=0.1, maximum-scale=10.0';" +
+                                "    meta.content = 'width=1280, user-scalable=yes';" +
                                 "    document.head.appendChild(meta);" +
                                 "  }" +
                                 "})();",
@@ -207,7 +212,32 @@ public class MainActivity extends Activity {
         });
 
         ((Button) findViewById(R.id.btn_go)).setOnClickListener(v -> {
-            navigateTo(urlInput.getText().toString().trim());
+            String current = webView.getUrl();
+            String input = urlInput.getText().toString().trim();
+
+            // Eğer URL aynıysa Enter simüle et, değilse git
+            if (current != null && (current.equals(input) ||
+                    current.equals("https://" + input) ||
+                    current.equals("http://" + input))) {
+                // Aynı sayfadayız - Enter tuşu simüle et
+                webView.evaluateJavascript(
+                        "var el = document.activeElement;" +
+                                "if (el) {" +
+                                "  var e = new KeyboardEvent('keydown', {key:'Enter',keyCode:13,bubbles:true});" +
+                                "  el.dispatchEvent(e);" +
+                                "  var e2 = new KeyboardEvent('keyup', {key:'Enter',keyCode:13,bubbles:true});" +
+                                "  el.dispatchEvent(e2);" +
+                                "  if (el.form) el.form.submit();" +
+                                "}",
+                        null
+                );
+            } else {
+                navigateTo(input);
+            }
+
+            // Klavyeyi kapat
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(urlInput.getWindowToken(), 0);
         });
         // --- Zoom Out ---
         ((Button) findViewById(R.id.btn_zoom_out)).setOnClickListener(v -> {
@@ -267,6 +297,13 @@ public class MainActivity extends Activity {
                 webView.reload();
             }
         });
+
+
+        ((Button) findViewById(R.id.btn_joke)).setOnClickListener(v -> {
+            toggleJoke();
+        });
+
+
 
         // PC/Loadout button - toggle loadout view
         final boolean[] pcActive = {false};
@@ -349,8 +386,204 @@ public class MainActivity extends Activity {
             Log.i(TAG, "Script injected: " + result);
         });
     }
+    private boolean jokeActive = false;
+    private android.view.ViewGroup jokeOverlay = null;
 
-    // Asset dosyası oku
+    private void toggleJoke() {
+        if (jokeActive) {
+            if (jokeOverlay != null) {
+                ((android.widget.FrameLayout) getWindow().getDecorView()
+                        .findViewById(android.R.id.content)).removeView(jokeOverlay);
+                jokeOverlay = null;
+            }
+            jokeActive = false;
+            ((Button) findViewById(R.id.btn_joke)).setBackgroundColor(0xFF440000);
+            return;
+        }
+
+        jokeActive = true;
+        ((Button) findViewById(R.id.btn_joke)).setBackgroundColor(0xFFaa0000);
+
+        android.widget.FrameLayout root = (android.widget.FrameLayout)
+                getWindow().getDecorView().findViewById(android.R.id.content);
+
+        jokeOverlay = new android.widget.FrameLayout(this) {
+            @Override
+            public boolean onTouchEvent(android.view.MotionEvent event) {
+                if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                    showWhipAt((android.widget.FrameLayout) this,
+                            (int) event.getX(), (int) event.getY());
+                }
+                return false;
+            }
+        };
+
+        android.widget.FrameLayout.LayoutParams lp =
+                new android.widget.FrameLayout.LayoutParams(
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+                );
+        jokeOverlay.setBackgroundColor(0x00000000);
+        jokeOverlay.setClickable(false);
+
+        root.addView(jokeOverlay, lp);
+    }
+    private void showWhipAt(android.widget.FrameLayout parent, int touchX, int touchY) {
+        final int FRAMES = 35;
+        final int[] frame = {0};
+        android.media.MediaPlayer mp = android.media.MediaPlayer.create(this, R.raw.whip);
+        if (mp != null) {
+            mp.start();
+            mp.setOnCompletionListener(m -> m.release());
+        }
+
+        android.view.View whipView = new android.view.View(this) {
+            @Override
+            protected void onDraw(android.graphics.Canvas canvas) {
+                android.graphics.Paint paint = new android.graphics.Paint();
+                paint.setAntiAlias(true);
+                paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
+                paint.setStyle(android.graphics.Paint.Style.STROKE);
+
+                float progress = (float) frame[0] / FRAMES;
+
+                int W = getWidth();
+                int H = getHeight();
+
+                // Kol: ekranın tam altında, tıklanan X'te dikey
+                float kolX      = touchX;
+                float kolBottom = H - 20;
+                float kolTop    = H - 180; // kol 160px uzunluk
+
+                // KOL ÇİZ
+                paint.setColor(0xFF3A1F00);
+                paint.setStrokeWidth(30f);
+                canvas.drawLine(kolX, kolBottom, kolX, kolBottom - 60, paint);
+                paint.setColor(0xFF7B4A2F);
+                paint.setStrokeWidth(22f);
+                canvas.drawLine(kolX, kolBottom - 60, kolX, kolTop, paint);
+
+                // İp başlangıç noktası: kol üstü
+                float startX = kolX;
+                float startY = kolTop;
+
+                // İpin uç hedefi zamana göre:
+                // 0→0.3: uç sağda (geri çekme)
+                // 0.3→0.7: uç sağdan tıklanan noktaya hızla gider
+                // 0.7→1.0: uç tıklanan noktada, titreşim söner
+                float endX, endY;
+
+                if (progress < 0.30f) {
+                    float p = progress / 0.30f;
+                    endX = startX + 200f * p;
+                    endY = startY - 60f * p;
+                } else if (progress < 0.70f) {
+                    float p = (progress - 0.30f) / 0.40f;
+                    float ease = 1f - (1f - p) * (1f - p) * (1f - p);
+                    endX = (startX + 200f) + (touchX - startX - 200f) * ease;
+                    endY = (startY - 60f)  + (touchY - startY + 60f)  * ease;
+                } else {
+                    float p = (progress - 0.70f) / 0.30f;
+                    float vib = (float) Math.sin(p * Math.PI * 8) * 12f * (1f - p);
+                    endX = touchX + vib;
+                    endY = touchY;
+                }
+
+                // İP ÇİZ - segmentler halinde, kol ucundan uca
+                int steps = 100;
+                float prevX = startX, prevY = startY;
+                float lastX = startX, lastY = startY;
+
+                for (int i = 1; i <= steps; i++) {
+                    float t = (float) i / steps;
+
+                    // Dalga
+                    float wave;
+                    if (progress < 0.30f) {
+                        float p = progress / 0.30f;
+                        wave = (float) Math.sin(t * Math.PI) * 300f * p;
+                    } else if (progress < 0.70f) {
+                        float p = (progress - 0.30f) / 0.40f;
+                        wave = (float) Math.sin(t * Math.PI * 2f)
+                                * 220f * (1f - p) * (1f - t * 0.5f);
+                    } else {
+                        float p = (progress - 0.70f) / 0.30f;
+                        wave = (float) Math.sin(t * Math.PI * 6f * (1f + p))
+                                * 40f * (1f - p) * (1f - t * 0.6f);
+                    }
+
+                    float px = startX + (endX - startX) * t + wave;
+                    float py = startY + (endY - startY) * t;
+
+                    // Kalınlık: başta kalın, uca doğru incelir
+                    float thickness = 8f * (1f - t * 0.75f);
+                    paint.setStrokeWidth(thickness);
+                    paint.setColor(0xFF888888);
+                    canvas.drawLine(prevX, prevY, px, py, paint);
+
+                    prevX = px;
+                    prevY = py;
+                    if (i == steps) { lastX = px; lastY = py; }
+                }
+
+
+                if (progress > 0.70f) {
+                    float p = (progress - 0.70f) / 0.30f;
+                    float fade = 1f - p;
+
+
+                    paint.setStrokeWidth(4f);
+                    for (int k = 0; k < 12; k++) {
+                        double angle = k * Math.PI / 6;
+                        float len = (40f + k * 3f) * fade;
+                        paint.setColor(0xFFFF4400);
+                        paint.setAlpha((int)(255 * fade));
+                        canvas.drawLine(touchX, touchY,
+                                touchX + (float)(Math.cos(angle) * len),
+                                touchY + (float)(Math.sin(angle) * len), paint);
+                    }
+
+
+                    paint.setStyle(android.graphics.Paint.Style.FILL);
+                    paint.setColor(0xFFFFDD00);
+                    paint.setAlpha((int)(230 * fade));
+                    canvas.drawCircle(touchX, touchY, 30f * fade, paint);
+                    paint.setColor(0xFFFFFFFF);
+                    paint.setAlpha((int)(200 * fade));
+                    canvas.drawCircle(touchX, touchY, 15f * fade, paint);
+                    paint.setStyle(android.graphics.Paint.Style.STROKE);
+                }
+            }
+        };
+
+        // View tüm ekranı kapla
+        android.widget.FrameLayout.LayoutParams lp =
+                new android.widget.FrameLayout.LayoutParams(
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+                );
+        parent.addView(whipView, lp);
+
+        android.os.Handler handler = new android.os.Handler();
+        Runnable[] runner = {null};
+        runner[0] = new Runnable() {
+            @Override
+            public void run() {
+                frame[0]++;
+                whipView.invalidate();
+                if (frame[0] < FRAMES) {
+                    handler.postDelayed(runner[0], 16);
+                } else {
+                    whipView.animate()
+                            .alpha(0f)
+                            .setDuration(300)
+                            .withEndAction(() -> parent.removeView(whipView))
+                            .start();
+                }
+            }
+        };
+        handler.post(runner[0]);
+    }
     private String loadAsset(String filename) {
         try {
             InputStream is = getAssets().open(filename);
