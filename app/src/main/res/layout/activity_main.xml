@@ -9,14 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_bar"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="-4dp" />
+        android:layout_alignParentTop="true" />
 
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="37dp"
         android:layout_alignParentBottom="true"
         android:background="#111128"
         android:elevation="8dp"
@@ -25,11 +23,10 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp">
 
-        <!-- URL input -->
         <EditText
             android:id="@+id/url_input"
             android:layout_width="0dp"
-            android:layout_height="49dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#1e1e3a"
             android:hint="Enter URL..."
@@ -43,32 +40,20 @@
             android:textColorHint="#6666aa"
             android:textSize="12sp" />
 
-        <!-- Go button -->
         <Button
             android:id="@+id/btn_go"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:background="#2244aa"
             android:padding="0dp"
             android:text="→"
             android:textColor="#ffffff"
             android:textSize="16sp" />
-	<Button
-            android:id="@+id/btn_refresh"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:background="#1e1e3a"
-            android:padding="0dp"
-            android:text="↺"
-            android:textColor="#aaaaff"
-            android:textSize="18sp" />
 
-        <!-- Zoom Out -->
         <Button
             android:id="@+id/btn_zoom_out"
-            android:layout_width="40dp"
+            android:layout_width="36dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:background="#1e1e3a"
@@ -76,10 +61,10 @@
             android:text="−"
             android:textColor="#aaaaff"
             android:textSize="20sp" />
-	        <!-- Zoom In -->
+
         <Button
             android:id="@+id/btn_zoom_in"
-            android:layout_width="40dp"
+            android:layout_width="36dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:background="#1e1e3a"
@@ -88,34 +73,43 @@
             android:textColor="#aaaaff"
             android:textSize="20sp" />
 
-        <!-- Script toggle button - green when active, red when inactive -->
         <Button
-            android:id="@+id/btn_toggle_script"
+            android:id="@+id/btn_refresh"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:background="#1e1e3a"
+            android:padding="0dp"
+            android:text="↺"
+            android:textColor="#aaaaff"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btn_pc"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:background="#1e1e3a"
+            android:padding="0dp"
+            android:text="🖥"
+            android:textColor="#aaaaff"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_toggle_script"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
             android:background="#1a4a1a"
             android:padding="0dp"
             android:text="⚡"
             android:textColor="#44ff88"
             android:textSize="16sp" />
-	<!-- PC button -->
-         <Button
-              android:id="@+id/btn_pc"
-              android:layout_width="40dp"
-              android:layout_height="wrap_content"
-              android:layout_marginLeft="2dp"
-              android:background="#1e1e3a"
-              android:padding="0dp"
-              android:text="🖥"
-              android:textColor="#aaaaff"
-              android:textSize="16sp" />
 
-        <!-- Info panel button -->
         <Button
             android:id="@+id/btn_info"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
             android:background="#1e1e3a"
             android:padding="0dp"
@@ -123,9 +117,19 @@
             android:textColor="#aaaaff"
             android:textSize="16sp" />
 
+        <Button
+            android:id="@+id/btn_joke"
+            android:layout_width="26dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
+            android:background="#440000"
+            android:padding="0dp"
+            android:text="😈"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+
     </LinearLayout>
 
-    <!-- Info panel (hidden by default) -->
     <LinearLayout
         android:id="@+id/info_panel"
         android:layout_width="260dp"
