@@ -4,7 +4,7 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 
 ##Features
 - Automatic expedition management
-- Auto job completion
+- jobs completion need to manually accept the script solves it automatically when you click file or hack without any input
 - Added user decision popup for expedition events
 - Randomly selects location, zone and objective (ready for future updates)
 
