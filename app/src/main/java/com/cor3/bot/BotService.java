@@ -55,8 +55,7 @@ public class BotService extends Service {
         );
 
         return new Notification.Builder(this, CHANNEL_ID)
-                .setContentTitle("COR3 Bot Active 🟢")
-                .setContentText("Running in background... 💪")
+                .setContentTitle("COR3 Bot Ready 🟢")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
