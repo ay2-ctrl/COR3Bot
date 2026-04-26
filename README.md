@@ -21,6 +21,8 @@ An Android automation tool for [cor3.gg](https://cor3.gg).
 ## Screenshots
 
 <img src="Screenshot_20260423_043010.jpg" width="300"/>
+<img src="Screenshot_20260426_170501_One UI Home.jpg" width="300"/>
+<img src="Screenshot_20260426_174526.jpg" width="300"/>
 
 ## Note
 Use at your own risk.
