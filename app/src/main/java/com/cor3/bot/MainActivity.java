@@ -343,7 +343,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void applyZoom() {
-        webView.getSettings().setTextZoom(zoomPercent);
+        webView.evaluateJavascript(
+                "document.body.style.zoom = '" + (zoomPercent / 100.0f) + "';",
+                null
+        );
         if (infoZoom != null) infoZoom.setText("Zoom: %" + zoomPercent);
         Log.d(TAG, "Zoom: %" + zoomPercent);
     }
@@ -623,11 +626,21 @@ public class MainActivity extends AppCompatActivity {
         android.app.NotificationManager nm =
                 (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+        // Uygulamayı açacak intent
+        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+        );
+
         android.app.Notification notif = new android.app.Notification.Builder(this, "cor3_bot_alerts")
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setAutoCancel(true)
+                .setContentIntent(pendingIntent)  // ← bildirme tıklayınca app açılır
                 .setVibrate(new long[]{0, 500, 200, 500})
                 .setPriority(android.app.Notification.PRIORITY_HIGH)
                 .build();
