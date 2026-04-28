@@ -1014,24 +1014,49 @@
                 background: #111128;
                 border: 1px solid #2244aa;
                 border-radius: 12px;
-                padding: 20px;
-                max-width: 340px;
-                width: 90%;
+                padding: 24px;
+                max-width: 420px;
+                width: 95%;
                 color: #e0e0ff;
+                max-height: 85vh;
+                overflow-y: auto;
             `;
 
             const title = document.createElement('div');
-            title.style.cssText = 'font-size:16px;font-weight:bold;color:#aaaaff;margin-bottom:8px;';
+            title.style.cssText = 'font-size:18px;font-weight:bold;color:#aaaaff;margin-bottom:10px;';
             title.textContent = '⚔️ Decision Required';
             box.appendChild(title);
 
+
             const loc = document.createElement('div');
-            loc.style.cssText = 'font-size:12px;color:#6666aa;margin-bottom:12px;';
+            loc.style.cssText = 'font-size:13px;color:#6666aa;margin-bottom:12px;';
             loc.textContent = (expedition.locationName || '') + (expedition.objectiveName ? ' · ' + expedition.objectiveName : '');
             box.appendChild(loc);
 
+            // Expedition risk bilgisi
+            const riskInfo = document.createElement('div');
+            riskInfo.style.cssText = `
+                font-size:13px;
+                margin-bottom:14px;
+                padding:10px 12px;
+                background:#1a1a3a;
+                border-radius:8px;
+                display:flex;
+                gap:16px;
+                flex-wrap:wrap;
+            `;
+            const currentRisk = expedition.riskScore ?? expedition.risk ?? expedition.currentRisk ?? null;
+            const mercName = expedition.mercenary?.name ?? expedition.mercenaryName ?? null;
+            const mercClass = expedition.mercenary?.class ?? expedition.mercenaryClass ?? null;
+
+            riskInfo.innerHTML =
+                (mercName ? `<span>🗡️ <strong style="color:#aaaaff;">${mercName}</strong>${mercClass ? ` <span style="color:#6666aa;">(${mercClass})</span>` : ''}</span>` : '') +
+                (currentRisk !== null ? `<span>⚠️ Risk: <strong style="color:${currentRisk > 50 ? '#ff4444' : currentRisk > 25 ? '#ffaa44' : '#44ff88'};">${currentRisk}</strong></span>` : '') +
+                (expedition.status ? `<span>📍 <span style="color:#6666aa;">${expedition.status}</span></span>` : '');
+            box.appendChild(riskInfo);
+
             const msg = document.createElement('div');
-            msg.style.cssText = 'font-size:13px;color:#ccccff;margin-bottom:16px;line-height:1.4;';
+            msg.style.cssText = 'font-size:14px;color:#ccccff;margin-bottom:18px;line-height:1.5;';
             msg.textContent = unresolvedMessage.content || '';
             box.appendChild(msg);
 
@@ -1052,13 +1077,13 @@
                 btn.style.cssText = `
                     display: block;
                     width: 100%;
-                    margin-bottom: 8px;
-                    padding: 10px 14px;
+                    margin-bottom: 10px;
+                    padding: 14px 16px;
                     background: #1e1e3a;
                     border: 1px solid #2244aa;
                     border-radius: 8px;
                     color: #e0e0ff;
-                    font-size: 13px;
+                    font-size: 14px;
                     text-align: left;
                     cursor: pointer;
                 `;
