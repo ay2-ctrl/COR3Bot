@@ -14,119 +14,127 @@
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="37dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:background="#111128"
-        android:elevation="8dp"
+        android:background="#0f0f20"
+        android:elevation="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp">
 
         <EditText
             android:id="@+id/url_input"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="69dp"
+            android:layout_height="43dp"
             android:layout_weight="1"
-            android:background="#1e1e3a"
+            android:background="#1a1a30"
             android:hint="Enter URL..."
             android:imeOptions="actionGo"
             android:inputType="textUri"
             android:maxLines="1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:singleLine="true"
-            android:textColor="#e0e0ff"
-            android:textColorHint="#6666aa"
+            android:textColor="#d0d0ff"
+            android:textColorHint="#444466"
             android:textSize="12sp" />
 
         <Button
             android:id="@+id/btn_go"
-            android:layout_width="36dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="4dp"
-            android:background="#2244aa"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="#2244bb"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="→"
             android:textColor="#ffffff"
             android:textSize="16sp" />
 
         <Button
             android:id="@+id/btn_zoom_out"
-            android:layout_width="36dp"
+            android:layout_width="39dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            android:background="#1e1e3a"
+            android:background="#16162a"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="−"
-            android:textColor="#aaaaff"
+            android:textColor="#7777bb"
             android:textSize="20sp" />
 
         <Button
             android:id="@+id/btn_zoom_in"
-            android:layout_width="36dp"
+            android:layout_width="38dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#1e1e3a"
+            android:background="#16162a"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="+"
-            android:textColor="#aaaaff"
+            android:textColor="#7777bb"
             android:textSize="20sp" />
 
         <Button
             android:id="@+id/btn_refresh"
-            android:layout_width="36dp"
+            android:layout_width="33dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#1e1e3a"
+            android:background="#16162a"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="↺"
-            android:textColor="#aaaaff"
+            android:textColor="#7777bb"
             android:textSize="18sp" />
 
         <Button
             android:id="@+id/btn_pc"
-            android:layout_width="40dp"
+            android:layout_width="32dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#1e1e3a"
+            android:background="#16162a"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="🖥"
-            android:textColor="#aaaaff"
-            android:textSize="16sp" />
+            android:textColor="#7777bb"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_toggle_script"
-            android:layout_width="30dp"
-            android:layout_height="match_parent"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#1a4a1a"
+            android:background="#0f2a0f"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="⚡"
-            android:textColor="#44ff88"
-            android:textSize="16sp" />
+            android:textColor="#33cc66"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_info"
             android:layout_width="36dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#1e1e3a"
+            android:background="#16162a"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="ℹ"
-            android:textColor="#aaaaff"
-            android:textSize="16sp" />
+            android:textColor="#7777bb"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_joke"
-            android:layout_width="26dp"
-            android:layout_height="match_parent"
+            android:layout_width="31dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
-            android:background="#440000"
+            android:background="#2a0000"
             android:padding="0dp"
+            android:stateListAnimator="@null"
             android:text="😈"
-            android:textColor="#ffffff"
-            android:textSize="16sp" />
+            android:textColor="#cc2222"
+            android:textSize="15sp" />
 
     </LinearLayout>
 
@@ -139,8 +147,8 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
         android:orientation="vertical"
-        android:background="#cc111128"
-        android:padding="12dp"
+        android:background="#dd0f0f20"
+        android:padding="14dp"
         android:visibility="gone"
         android:elevation="16dp">
 
@@ -149,9 +157,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="URL: -"
-            android:textColor="#aaaaff"
+            android:textColor="#8888cc"
             android:textSize="11sp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="6dp" />
 
         <TextView
             android:id="@+id/info_script"
@@ -160,23 +168,23 @@
             android:text="Script: Waiting..."
             android:textColor="#ffaa44"
             android:textSize="11sp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="6dp" />
 
         <TextView
             android:id="@+id/info_zoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Zoom: %100"
-            android:textColor="#aaaaff"
+            android:textColor="#8888cc"
             android:textSize="11sp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="6dp" />
 
         <TextView
             android:id="@+id/info_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Status: Ready"
-            android:textColor="#44ff88"
+            android:textColor="#33cc66"
             android:textSize="11sp" />
 
     </LinearLayout>
